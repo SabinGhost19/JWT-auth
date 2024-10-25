@@ -1,0 +1,30 @@
+//test file in the same text editor
+
+//normal request
+GET http://localhost:3000/posts
+Authorization: Bearer ACCESS_TOKEN
+
+//get new acces token based on the refresh token from the authServer
+POST http://localhost:4000/token
+Content-Type: application/json
+
+{
+    "token": "REFRESH_TOKEN"
+}
+
+//delete/logout...deleteing the refresh token
+DELETE http://localhost:4000/logout
+Content-Type: application/json
+
+{
+    "token": "REFRESH_TOKEN"
+}
+
+
+//login...getting acces token and refresh token
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "username": "Sabin"
+}
