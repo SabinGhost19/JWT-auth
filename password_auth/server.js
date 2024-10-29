@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
-app.use(express.json())
+const cors = require('cors');
 
+app.use(express.json())
+app.use(cors());
 
 const users = []
 
@@ -14,8 +16,9 @@ app.post('/users', async (req, res) => {
     try {
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(req.body.password, salt)
-        const user = { name: req.body.name, password: hashedPassword }
+        const user = { email: req.body.email, password: hashedPassword }
         users.push(user)
+        console.log(users)
         res.status(201).send()
 
     } catch {
@@ -24,7 +27,7 @@ app.post('/users', async (req, res) => {
 })
 
 app.post('/users/login', async (req, res) => {
-    const user = users.find(user => user.name === req.body.name)
+    const user = users.find(user => user.email === req.body.email)
 
     if (user == null) {
         return res.status(400).send('Cannot find user')
