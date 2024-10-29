@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+import axiosInstance from '../utils/axiosInstance';
+import { saveTokens } from '../utils/authUtils';
 const Register = () => {
-  const urlPath = 'http://localhost:3000/users';
+  const urlPath = 'http://localhost:4000/login';
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -12,17 +12,19 @@ const Register = () => {
   const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
-    //event.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post(urlPath, {
+      const response = await axiosInstance.post(urlPath, {
         email: email,
         password: password,
       });
 
       if (response.status === 201 || response.status === 200) {
+        const { accessToken, refreshToken } = response.data;
+        console.log('Access Token primit:', accessToken);
+        saveTokens(accessToken, refreshToken);
         navigate('/home');
       } else {
         throw new Error('Autentificare eșuată!');

@@ -8,16 +8,17 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const jwt = require('jsonwebtoken')
+const cors = require('cors');
 
 
 app.use(express.json())
-
+app.use(cors())
 
 const posts = [{
-    username: "Sabin",
+    email: "sabin@s",
     title: 'Post 1'
 }, {
-    username: "Tom",
+    email: "Tom",
     title: 'Post 2'
 }
 ]
@@ -26,19 +27,21 @@ const posts = [{
 
 //add middleware to authenticate Token
 app.get('/posts', authenticateToken, (req, res) => {
-    res.json(posts.filter(post => post.username === req.user.name));
+
+    console.log('User authenticated:', req.user); // Verifică dacă utilizatorul este autentificat corect
+    console.log('Sending posts:', posts);
+    res.json(posts.filter(post => post.email === req.user.email));
 });
 
 
 function authenticateToken(req, res, next) {
     //from header,Bearer TOKEN
     const authHeader = req.headers['authorization']
-
+    console.log(authHeader)
     //get the second param in the array
     //verify if we have an authHeader
     const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
-    console.log('token extraction from request: ', token);
 
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
