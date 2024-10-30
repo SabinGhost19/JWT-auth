@@ -42,7 +42,8 @@ app.post('/refresh', (req, res) => {
         //after verifying the integrity of the refresh
         const accessToken = generateAccessToken({ email: user.email });
         //send the new generated acces token to the client
-        res.json({ acccessToken: accessToken });
+        console.log("Trimitem ACCES TOKEN NOU");
+        res.json({ accessToken: accessToken });
     })
 })
 
@@ -73,7 +74,7 @@ app.post('/login', (req, res) => {
 })
 
 function generateAccessToken(user) {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5s' });
 }
 
 app.listen(4000, () => console.log('Server is running on port 4000'))
