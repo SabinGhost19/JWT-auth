@@ -9,20 +9,38 @@ const express = require('express')
 const app = express()
 const jwt = require('jsonwebtoken')
 const cors = require('cors');
-
+const bcrypt=require('bcrypt');
 
 app.use(express.json())
 app.use(cors())
 
 //just for demonstration
 let stored_refreshTokens = [];
-
+//stored the users
+const users=[];
 
 app.delete('/logout', (req, res) => {
     stored_refreshTokens = stored_refreshTokens.filter(token => token !== req.body.token)
     //delete the refresh token from the stored_refreshed_tokens
     res.sendStatus(204);
 })
+
+
+//handle the register request
+app.post('/register',async (req,res)=>{
+    try {
+        const salt = await bcrypt.genSalt()
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        const user = { email: req.body.email, password: hashedPassword }
+        users.push(user)
+        console.log(users)
+        res.status(201).send()
+
+    } catch {
+        res.status(500).send()
+    }
+})
+
 app.post('/refresh', (req, res) => {
 
     console.log('in post refresh');
@@ -48,29 +66,41 @@ app.post('/refresh', (req, res) => {
 })
 
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     //authenticate the user here
     //passw and user etc...
     //from prev homework
     console.log('Login request received with email:', req.body.email);
 
-    const email = req.body.email
-    if (!email) {
-        res.statusCode(400).send('Username required')
+
+    const user = users.find(user => user.email === req.body.email)
+    if (user == null) {
+        return res.status(400).send('Cannot find user')
     }
-    //take the payload
-    //what we want to serialize
-    const user = { email: email }
-    //can add expiration date
-    const accessToken = generateAccessToken(user);
+    try {
+        //secure
+        //prevent timing attacks
+
+        if (await bcrypt.compare(req.body.password, user.password)) {
+            //take the payload
+            //what we want to serialize
+            //can add expiration date
+            const accessToken = generateAccessToken(user);
     
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-    stored_refreshTokens.push(refreshToken);
+            const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+                stored_refreshTokens.push(refreshToken);
 
-    res.json({ accessToken: accessToken, refreshToken: refreshToken });
+            res.json({ accessToken: accessToken, refreshToken: refreshToken });
+            //create the accessToken to be passed to the user
+            //with his date
+        } else {
+            res.status(403).send('Not Allowed')
+        }
 
-    //create the accessToken to be passed to the user
-    //with his date
+    } catch {
+        res.status(500).send()
+    }
+
 })
 
 function generateAccessToken(user) {

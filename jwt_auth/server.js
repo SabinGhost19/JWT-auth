@@ -18,7 +18,7 @@ const posts = [{
     email: "sabin@s",
     title: 'Post 1'
 }, {
-    email: "Tom",
+    email: "Tom@T",
     title: 'Post 2'
 }
 ]
@@ -29,7 +29,6 @@ const posts = [{
 app.get('/posts', authenticateToken, (req, res) => {
 
     console.log('User authenticated:', req.user); // Verifică dacă utilizatorul este autentificat corect
-    console.log('Sending posts:', posts);
     res.json(posts.filter(post => post.email === req.user.email));
 });
 
@@ -37,7 +36,6 @@ app.get('/posts', authenticateToken, (req, res) => {
 function authenticateToken(req, res, next) {
     //from header,Bearer TOKEN
     const authHeader = req.headers['authorization']
-    console.log(authHeader)
     //get the second param in the array
     //verify if we have an authHeader
     const token = authHeader && authHeader.split(' ')[1]
@@ -45,10 +43,14 @@ function authenticateToken(req, res, next) {
 
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+        //user obtinut din 
+        //decodificarea tokenuluii si se obtine payloadul original
+        //cu care a fost codificat unde exista userul si parola
         if (error) {
             //has a token but has no longer acccess
             return res.sendStatus(403)
         }
+        console.log(user.email)
         req.user = user
         next()
     })

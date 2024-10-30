@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import NotFoundPage from './pages/NotFoundPage';
 import HomePage from './pages/Home';
 import { AuthProvider } from './context/AuthContext';
+import Login from './pages/Login';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,11 @@ const router = createBrowserRouter([
   {
     path: '/home',
     element: <HomePage />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
     errorElement: <NotFoundPage />,
   },
 ]);

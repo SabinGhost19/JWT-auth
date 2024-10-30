@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
+import { saveTokens } from '../utils/authUtils';
 
-const Register = () => {
-  const urlPath = 'http://localhost:4000/register';
+const Login = () => {
+  const urlPath = 'http://localhost:4000/login';
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = async () => {
+  const handleLoginIn = async () => {
     setLoading(true);
     setError(null);
 
@@ -22,7 +23,10 @@ const Register = () => {
       });
 
       if (response.status === 201 || response.status === 200) {
-        navigate('/login');
+        const { accessToken, refreshToken } = response.data;
+        console.log('Access Token primit:', accessToken);
+        saveTokens(accessToken, refreshToken);
+        navigate('/home');
       } else {
         throw new Error('Autentificare eșuată!');
       }
@@ -43,7 +47,7 @@ const Register = () => {
     return (
       <>
         <form
-          onSubmit={handleSignIn}
+          onSubmit={handleLoginIn}
           className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
         >
           <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
@@ -96,7 +100,7 @@ const Register = () => {
             </div>
           </div>
         </form>
-        <p>Salut din Register</p>
+        <p>Salut din LOGIN</p>
       </>
     );
   };
@@ -104,4 +108,4 @@ const Register = () => {
   return <>{renderRegisterPage()}</>;
 };
 
-export default Register;
+export default Login;
