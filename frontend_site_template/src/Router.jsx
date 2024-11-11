@@ -4,7 +4,7 @@ import App from './App';
 import Register from './pages/Register';
 import NotFoundPage from './pages/NotFoundPage';
 import HomePage from './pages/Home';
-import { AuthProvider } from './context/AuthContext';
+// import { AuthProvider } from './context/AuthContext';
 import Login from './pages/Login';
 
 const router = createBrowserRouter([
@@ -33,9 +33,7 @@ const router = createBrowserRouter([
 
 const Router = () => (
   <RouterProvider router={router}>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <App />
   </RouterProvider>
 );
 
